@@ -1,0 +1,41 @@
+Host: localhost
+Port: 11000
+Transmission Encoding: TCP
+Data Encoding: Text
+
+Register function:
+Request: REGISTER%%$username%%$password
+Response: ADDED
+or
+Response: USERNAME_TAKEN
+or
+Response: INVALID_PASSWORD
+
+Login function:
+Request: LOGIN%%$username%%$password
+Response: SUCCESSFUL
+or
+Response: FAILED
+or
+Response: INVALID_REQUEST
+
+Send Email function:
+Request: SEND%%$recipient%%$subject%%$content
+Response: EMAIL_SENT
+or
+Response: USER_NOT_FOUND
+
+List Received Emails:
+Request: LIST_RECEIVED
+Response: EMAIL%%$id%%$sender%%$subject%%$timestamp
+
+or
+Response: NO_EMAILS_FOUND
+
+Read Email:
+Request: READ%%$id
+
+
+Logout function:
+Request: LOGOUT
+Response: LOGGED_OUT

@@ -9,11 +9,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString
 
 public class Email {
     //Class properties
+    @EqualsAndHashCode.Include
     private int id;
     private String sender;
     private String receipiant;

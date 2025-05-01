@@ -8,13 +8,13 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString
 
 public class User {
     //Class Properties
+    @EqualsAndHashCode.Include
     private String username;
     private String password;
-    private List<Email> sentEmails;
-    private List<Email> receivedEmails;
+
 }

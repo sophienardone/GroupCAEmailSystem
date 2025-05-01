@@ -16,9 +16,7 @@ public class EmailManager {
     }
     public boolean addToSentEmail(Email email){
         boolean  added = false;
-        String sender = email.getSender();
         if(sentEmail.containsKey(email.getSender())){
-            User user = null;
             List<Email> sentByUser = new ArrayList<>();
             sentByUser.add(email);
             sentEmail.put(email.getSender(),sentByUser );
@@ -28,12 +26,10 @@ public class EmailManager {
     }
     public boolean addToReceevedEmail(Email email){
         boolean  added = false;
-        String recipient = email.getReceipiant();
-        if(sentEmail.containsKey(email.getReceipiant())){
-            User user = null;
+        if(receivedEmail.containsKey(email.getReceipiant())){
             List<Email> recievedByUser = new ArrayList<>();
             recievedByUser.add(email);
-            sentEmail.put(email.getReceipiant(),recievedByUser );
+            receivedEmail.put(email.getReceipiant(),recievedByUser );
             added = true;
         }
         return added;

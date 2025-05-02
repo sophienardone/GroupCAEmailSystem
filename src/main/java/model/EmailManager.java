@@ -9,31 +9,62 @@ import java.util.Map;
 public class EmailManager {
     private Map<String, List<Email>> receivedEmail;
     private Map<String, List<Email>> sentEmail;
+    private static int emailCount = 0;
 
     public EmailManager(){
         this.receivedEmail = new HashMap<>();
         this.sentEmail = new HashMap<>();
     }
-    public boolean addToSentEmail(Email email){
+    public boolean add(int id,String sender,String recipient, String subject,
+                       String msg, LocalDateTime timestamp) {
+
+        Email e  = new Email(id,sender,recipient,subject, msg, timestamp);
+        return addToSentEmail(e);
+    }
+    public boolean addFirst(Email email){
         boolean  added = false;
-        if(sentEmail.containsKey(email.getSender())){
+        if(sentEmail.isEmpty()){
             List<Email> sentByUser = new ArrayList<>();
-            sentByUser.add(email);
-            sentEmail.put(email.getSender(),sentByUser );
+            sentByUser.add(0, email);
+            sentEmail.put(email.getSender(),sentByUser);
+            added = true;
+        }
+        if(receivedEmail.isEmpty()){
+            List<Email> receivedEmailsByUser = new ArrayList<>();
+            receivedEmailsByUser.add(0, email);
+            sentEmail.put(email.getReceipiant(),receivedEmailsByUser);
             added = true;
         }
         return added;
     }
-    public boolean addToReceevedEmail(Email email){
+    public boolean addToSentEmail(Email email){
         boolean  added = false;
-        if(receivedEmail.containsKey(email.getReceipiant())){
+        if(!sentEmail.containsKey(email.getSender())){
+           added = addFirst(email);
+           if(sentEmail.containsKey(email.getSender())){
+               sentEmail.get(sentEmail.get(sentEmail.values()).add(email));
+             added = true;
+           }
+
+        }
+        return added;
+    }
+    public boolean addToRecievedEmail(Email email){
+        boolean  added = false;
+        /*if(receivedEmail.containsKey(email.getReceipiant())){
             List<Email> recievedByUser = new ArrayList<>();
             recievedByUser.add(email);
             receivedEmail.put(email.getReceipiant(),recievedByUser );
             added = true;
+        }*/
+        if(!receivedEmail.containsKey(email.getReceipiant())) {
+            added = addFirst(email);
+        }
+        if(receivedEmail.containsKey(email.getReceipiant())){
+            receivedEmail.get(receivedEmail.values()).add(email);
+            added = true;
         }
         return added;
-
     }
 
 }

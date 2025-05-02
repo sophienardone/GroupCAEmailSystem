@@ -10,6 +10,8 @@ or
 Response: USERNAME_TAKEN
 or
 Response: INVALID_PASSWORD
+or
+Response: INVALID_USERNAME
 
 Login function:
 Request: LOGIN%%$username%%$password
@@ -18,12 +20,18 @@ or
 Response: FAILED
 or
 Response: INVALID_REQUEST
+or
+Response: USER_NOT_FOUND
+
 
 Send Email function:
 Request: SEND%%$recipient%%$subject%%$content
 Response: EMAIL_SENT
 or
 Response: USER_NOT_FOUND
+or
+Response: INVALID_EMAIL_FORMAT
+
 
 List Received Emails:
 Request: LIST_RECEIVED
@@ -34,8 +42,13 @@ Response: NO_EMAILS_FOUND
 
 Read Email:
 Request: READ%%$id
+Response: EMAIL_CONTENT%%$content
+or
+Response: EMAIL_NOT_FOUND
 
 
 Logout function:
 Request: LOGOUT
 Response: LOGGED_OUT
+or
+Response: INVALID_REQUEST

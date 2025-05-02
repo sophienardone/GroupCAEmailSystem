@@ -24,15 +24,21 @@ public class EmailUtilities {
     public static final String USERNAME_TAKEN = "USERNAME_TAKEN";
     public static final String INVALID_PASSWORD = "INVALID_PASSWORD";
 
+    public static final String INVALID_USERNAME = "INVALID_USERNAME";
+
     public static final String SUCCESSFUL = "SUCCESSFUL";
     public static final String FAILED = "FAILED";
     public static final String EMAIL_SENT = "EMAIL_SENT";
     public static final String USER_NOT_FOUND= "USER_NOT_FOUND";
     public static final String EMAIL = "EMAIL";
     public static final String NO_EMAILS_FOUND= "NO_EMAILS_FOUND";
+
+    public static final String EMAIL_NOT_FOUND = "EMAIL_NOT_FOUND";
+    public static final String LOGGED_OUT = "LOGGED_OUT";
+    public static final String INVALID_REQUEST = "INVALID_REQUEST";
     public static final String ACK = "GOODBYE";
     public static final String END_PROGRAM = "PROGRAM_SHUTTING_DOWN";
 
     // GENERAL MALFORMED RESPONSE:
-    public static final String INVALID_REQUEST = "INVALID_REQUEST";
+
 }

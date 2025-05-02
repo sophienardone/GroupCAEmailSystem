@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 public class EmailManager {
-    private Map<String, List<Email>> receivedEmail;
+    public Map<String, List<Email>> receivedEmail;
     private Map<String, List<Email>> sentEmail;
-    private static int emailCount = 0;
+    public static int emailCount = 0;
 
     public EmailManager(){
         this.receivedEmail = new HashMap<>();
@@ -19,17 +19,19 @@ public class EmailManager {
                        String msg, LocalDateTime timestamp) {
 
         Email e  = new Email(id,sender,recipient,subject, msg, timestamp);
-        return addToSentEmail(e);
+        boolean addedToSent = addToSentEmail(e);
+        boolean addedToReceived = addToReceivedEmail(e);
+        return addedToSent && addedToReceived;
     }
     public boolean addFirst(Email email){
         boolean  added = false;
-        if(sentEmail.isEmpty()){
+        if(!sentEmail.containsKey(email.getSender())) {
             List<Email> sentByUser = new ArrayList<>();
             sentByUser.add(0, email);
             sentEmail.put(email.getSender(),sentByUser);
             added = true;
         }
-        if(receivedEmail.isEmpty()){
+        if(!receivedEmail.containsKey(email.getReceipiant())) {
             List<Email> receivedEmailsByUser = new ArrayList<>();
             receivedEmailsByUser.add(0, email);
             sentEmail.put(email.getReceipiant(),receivedEmailsByUser);
@@ -39,17 +41,13 @@ public class EmailManager {
     }
     public boolean addToSentEmail(Email email){
         boolean  added = false;
-        if(!sentEmail.containsKey(email.getSender())){
-           added = addFirst(email);
-           if(sentEmail.containsKey(email.getSender())){
-               sentEmail.get(sentEmail.get(sentEmail.values()).add(email));
+        List<Email> senderSentEmails = sentEmail.getOrDefault(email.getSender(), new ArrayList<>());
+        senderSentEmails.add(email);
+        sentEmail.put(email.getSender(), senderSentEmails);
              added = true;
-           }
-
-        }
         return added;
     }
-    public boolean addToRecievedEmail(Email email){
+    public boolean addToReceivedEmail(Email email){
         boolean  added = false;
         /*if(receivedEmail.containsKey(email.getReceipiant())){
             List<Email> recievedByUser = new ArrayList<>();
@@ -57,14 +55,17 @@ public class EmailManager {
             receivedEmail.put(email.getReceipiant(),recievedByUser );
             added = true;
         }*/
-        if(!receivedEmail.containsKey(email.getReceipiant())) {
-            added = addFirst(email);
-        }
-        if(receivedEmail.containsKey(email.getReceipiant())){
-            receivedEmail.get(receivedEmail.values()).add(email);
+        List<Email> recipientReceivedEmails = receivedEmail.getOrDefault(email.getReceipiant(), new ArrayList<>());
+        recipientReceivedEmails.add(email);
+        receivedEmail.put(email.getReceipiant(), recipientReceivedEmails);
             added = true;
-        }
         return added;
     }
+
+    public List<Email> getReceivedEmailsForUser(String username) {
+        return receivedEmail.getOrDefault(username, new ArrayList<>());
+    }
+
+
 
 }

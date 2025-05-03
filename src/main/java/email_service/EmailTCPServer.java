@@ -3,6 +3,8 @@ package email_service;
 import model.Email;
 import model.EmailManager;
 import model.User;
+import model.UserManager;
+import utils.SecurityUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,7 +20,7 @@ import java.util.Map;
 public class EmailTCPServer {
 
     private static final int PORT = EmailUtilities.PORT;
-    private static Map<String, User> users = new HashMap<>();
+    private static UserManager userManager = new UserManager();
     private static EmailManager emailManager = new EmailManager();
 
     public static void main(String[] args) {
@@ -101,13 +103,16 @@ public class EmailTCPServer {
             String username = components[1];
             String password = components[2];
 
-            if (users.containsKey(username)) {
+            // Attempt to register the user using the UserManager
+            // If the username already exists, registration fails
+            if (!userManager.registerUser(username, password)) {
                 return EmailUtilities.USERNAME_TAKEN;
             }
 
-            users.put(username, new User(username, password));
             return EmailUtilities.ADDED;
         }
+
+
 
         private String handleLogin(String[] components) {
             if (components.length != 3) {
@@ -117,20 +122,22 @@ public class EmailTCPServer {
             String username = components[1];
             String password = components[2];
 
-
-            User user = users.get(username);
-            if (user == null) {
+            // Check if the username exists in the system
+            if (!userManager.userExists(username)) {
                 return EmailUtilities.USER_NOT_FOUND;
             }
-            if (!user.getPassword().equals(password)) {
+
+            // Verify the password against the stored (hashed) password
+            if (!userManager.authenticate(username, password)) {
                 return EmailUtilities.FAILED;
             }
-
 
             loggedIn = true;
             currentUser = username;
             return EmailUtilities.SUCCESSFUL;
         }
+
+
 
         private String handleSendEmail(String[] components) {
             if (!loggedIn) {
@@ -145,12 +152,21 @@ public class EmailTCPServer {
             String subject = components[2];
             String message = components[3];
 
+            //  Use userManager to check if recipient exists
+            if (!userManager.userExists(recipient)) {
+                return EmailUtilities.USER_NOT_FOUND;
+            }
 
+            // Create the email and store it
             Email email = new Email(++EmailManager.emailCount, currentUser, recipient, subject, message, LocalDateTime.now());
+
+            // Save in both sent and received
+            emailManager.addToSentEmail(email);
             emailManager.addToReceivedEmail(email);
 
             return EmailUtilities.EMAIL_SENT;
         }
+
 
         private String handleListReceivedEmails() {
             if (!loggedIn) {

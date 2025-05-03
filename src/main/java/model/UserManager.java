@@ -1,6 +1,8 @@
 package model;
 
 import utils.SecurityUtils;
+
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,4 +34,10 @@ public class UserManager {
     public User getUser(String username) {
         return users.get(username);
     }
+
+    // login with socket
+    public boolean login(String username, String password, Socket clientSocket) {
+        return authenticate(username, password);
+    }
+
 }

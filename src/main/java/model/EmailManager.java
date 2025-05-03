@@ -1,5 +1,7 @@
 package model;
 
+import email_service.EmailUtilities;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,6 +67,21 @@ public class EmailManager {
     public List<Email> getReceivedEmailsForUser(String username) {
         return receivedEmail.getOrDefault(username, new ArrayList<>());
     }
+
+
+    public void initializeMailbox(String username) {
+        receivedEmail.putIfAbsent(username, new ArrayList<>());
+        sentEmail.putIfAbsent(username, new ArrayList<>());
+    }
+
+
+    public String sendEmail(String sender, String recipient, String subject, String content) {
+        int emailId = ++emailCount;
+        LocalDateTime now = LocalDateTime.now();
+        boolean success = add(emailId, sender, recipient, subject, content, now);
+        return success ? EmailUtilities.EMAIL_SENT : EmailUtilities.FAILED;
+    }
+
 
 
 

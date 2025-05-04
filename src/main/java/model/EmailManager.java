@@ -63,7 +63,9 @@ public class EmailManager {
             added = true;
         return added;
     }
-
+    public List<Email> getSentEmailsForUser(String username) {
+        return sentEmail.getOrDefault(username, new ArrayList<>());
+    }
     public List<Email> getReceivedEmailsForUser(String username) {
         return receivedEmail.getOrDefault(username, new ArrayList<>());
     }
@@ -81,8 +83,44 @@ public class EmailManager {
         boolean success = add(emailId, sender, recipient, subject, content, now);
         return success ? EmailUtilities.EMAIL_SENT : EmailUtilities.FAILED;
     }
+    public List<Email> listSentEmailsByID(int id) {
+        List<Email> matchingEmails = new ArrayList<>();
+        // Iterate through all lists of received emails
+        for (List<Email> emailList : sentEmail.values()) {
+            for (Email email : emailList) {
+                if (email.getId() == id) {
+                    matchingEmails.add(email);
+                }
+            }
+        }
 
+        return matchingEmails;
+    }
+    public List<Email> listRecievedEmailsBySubject(String subject) {
+        List<Email> matchingEmails = new ArrayList<>();
+        // Iterate through all lists of received emails
+        for (List<Email> emailList : receivedEmail.values()) {
+            for (Email email : emailList) {
+                if (email.getSubject().equalsIgnoreCase(subject)) {
+                    matchingEmails.add(email);
+                }
+            }
+        }
 
+        return matchingEmails;
+    }
+    public List<Email> listRecievedEmailsBySender(String sender) {
+        List<Email> matchingEmails = new ArrayList<>();
+        // Iterate through all lists of received emails
+        for (List<Email> emailList : receivedEmail.values()) {
+            for (Email email : emailList) {
+                if (email.getSender().equalsIgnoreCase(sender)) {
+                    matchingEmails.add(email);
+                }
+            }
+        }
+        return matchingEmails;
+    }
 
 
 }

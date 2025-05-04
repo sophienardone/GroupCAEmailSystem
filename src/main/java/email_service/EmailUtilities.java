@@ -32,6 +32,10 @@ public class EmailUtilities {
     public static final String USER_NOT_FOUND= "USER_NOT_FOUND";
     public static final String EMAIL = "EMAIL";
     public static final String NO_EMAILS_FOUND= "NO_EMAILS_FOUND";
+    public static final String LIST_SENT = "LIST_SENT";
+    public static final String SEARCH_SENT = "SEARCH_SENT";
+    public static final String SEARCH_RECEIVED = "SEARCH_RECEIVED";
+
 
     public static final String EMAIL_NOT_FOUND = "EMAIL_NOT_FOUND";
     public static final String LOGGED_OUT = "LOGGED_OUT";

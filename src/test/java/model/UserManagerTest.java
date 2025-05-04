@@ -3,8 +3,7 @@ package model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserManagerTest {
 
@@ -41,5 +40,27 @@ public class UserManagerTest {
     void test_NonexistentUser(){
      boolean result = userManager.authenticate("fakeuser", "fakeuser123");
      assertFalse(result);
+    }
+
+    @Test
+    void testRegisterUser_Duplicate() {
+        userManager.registerUser("bob", "secret");
+        boolean result = userManager.registerUser("bob", "anotherSecret");
+        assertFalse(result);
+    }
+
+    @Test
+    void testAuthenticate_WrongPassword() {
+        userManager.registerUser("dave", "pass123");
+        boolean result = userManager.authenticate("dave", "wrongpass");
+        assertFalse(result);
+    }
+
+    @Test
+    void testGetUser() {
+        userManager.registerUser("frank", "frankpass");
+        User user = userManager.getUser("frank");
+        assertNotNull(user);
+        assertEquals("frank", user.getUsername());
     }
 }

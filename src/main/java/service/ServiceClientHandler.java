@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,6 +79,13 @@ public class ServiceClientHandler implements Runnable {
                 return handleRead(parts);
             case EmailUtilities.LOGOUT:
                 return handleLogout();
+            case EmailUtilities.LIST_SENT:
+                return handleListSent();
+            case EmailUtilities.SEARCH_RECEIVED:
+                return handleSearchReceived(parts);
+            case EmailUtilities.SEARCH_SENT:
+                return handleSearchSent(parts);
+
             case EmailUtilities.EXIT:
                 return EmailUtilities.ACK;
             default:
@@ -171,4 +179,74 @@ public class ServiceClientHandler implements Runnable {
     private boolean isLoggedIn() {
         return loggedInUser != null;
     }
+
+
+    private String handleListSent() {
+        if (!isLoggedIn()) return EmailUtilities.FAILED;
+        List<Email> emails = emailManager.getSentEmailsForUser(loggedInUser.getUsername());
+        if (emails.isEmpty()) return EmailUtilities.NO_EMAILS_FOUND;
+
+        StringBuilder builder = new StringBuilder();
+        for (Email email : emails) {
+            builder.append(email.getId()).append(EmailUtilities.DELIMITER)
+                    .append(email.getReceipiant()).append(EmailUtilities.DELIMITER)
+                    .append(email.getSubject()).append(EmailUtilities.DELIMITER)
+                    .append(email.getTimeStamp()).append("\n");
+        }
+        return builder.toString().trim();
+    }
+
+
+    private String handleSearchReceived(String[] parts) {
+        if (!isLoggedIn() || parts.length < 3) return EmailUtilities.INVALID_REQUEST;
+
+        String type = parts[1];
+        String keyword = parts[2];
+        List<Email> results;
+
+        if (type.equalsIgnoreCase("subject")) {
+            results = emailManager.listRecievedEmailsBySubject(keyword);
+        } else if (type.equalsIgnoreCase("sender")) {
+            results = emailManager.listRecievedEmailsBySender(keyword);
+        } else {
+            return EmailUtilities.INVALID_REQUEST;
+        }
+
+        return serializeSearchResults(results);
+    }
+
+
+    private String handleSearchSent(String[] parts) {
+        if (!isLoggedIn() || parts.length < 3) return EmailUtilities.INVALID_REQUEST;
+
+        String type = parts[1];
+        String keyword = parts[2];
+        List<Email> results = new ArrayList<>();
+
+        for (Email email : emailManager.getSentEmailsForUser(loggedInUser.getUsername())) {
+            if (type.equalsIgnoreCase("recipient") && email.getReceipiant().equalsIgnoreCase(keyword)) {
+                results.add(email);
+            } else if (type.equalsIgnoreCase("subject") && email.getSubject().equalsIgnoreCase(keyword)) {
+                results.add(email);
+            }
+        }
+
+        return serializeSearchResults(results);
+    }
+
+
+
+    private String serializeSearchResults(List<Email> emails) {
+        if (emails.isEmpty()) return EmailUtilities.NO_EMAILS_FOUND;
+        StringBuilder builder = new StringBuilder();
+        for (Email email : emails) {
+            builder.append(email.getId()).append(EmailUtilities.DELIMITER)
+                    .append(email.getSender()).append(EmailUtilities.DELIMITER)
+                    .append(email.getSubject()).append(EmailUtilities.DELIMITER)
+                    .append(email.getTimeStamp()).append("\n");
+        }
+        return builder.toString().trim();
+    }
+
+
 }

@@ -9,14 +9,10 @@ import java.util.Scanner;
 public class TCPEmailClient {
     public static void main(String[] args) {
         Scanner userInput = new Scanner(System.in);
-
-        //  network layer with hostname and port
         TCPNetworkLayer network = new TCPNetworkLayer(EmailUtilities.HOSTNAME, EmailUtilities.PORT);
 
         try {
-            // Connect to the server
             network.connect();
-
             boolean isRunning = true;
 
             while (isRunning) {
@@ -25,13 +21,15 @@ public class TCPEmailClient {
                 System.out.println("2. LOGIN");
                 System.out.println("3. SEND EMAIL");
                 System.out.println("4. LIST RECEIVED EMAILS");
-                System.out.println("5. READ EMAIL BY ID");
-                System.out.println("6. LOGOUT");
-                System.out.println("7. EXIT");
+                System.out.println("5. SEARCH RECEIVED EMAILS");
+                System.out.println("6. LIST SENT EMAILS");
+                System.out.println("7. SEARCH SENT EMAILS");
+                System.out.println("8. READ EMAIL BY ID");
+                System.out.println("9. LOGOUT");
+                System.out.println("10. EXIT");
 
                 System.out.print("\nEnter command number: ");
                 String choice = userInput.nextLine();
-
                 String message = "";
 
                 switch (choice) {
@@ -66,16 +64,36 @@ public class TCPEmailClient {
                         break;
 
                     case "5":
+                        System.out.print("Search received by (subject/sender): ");
+                        String searchTypeR = userInput.nextLine();
+                        System.out.print("Keyword: ");
+                        String keywordR = userInput.nextLine();
+                        message = EmailUtilities.SEARCH_RECEIVED + EmailUtilities.DELIMITER + searchTypeR + EmailUtilities.DELIMITER + keywordR;
+                        break;
+
+                    case "6":
+                        message = EmailUtilities.LIST_SENT;
+                        break;
+
+                    case "7":
+                        System.out.print("Search sent by (recipient/subject): ");
+                        String searchTypeS = userInput.nextLine();
+                        System.out.print("Keyword: ");
+                        String keywordS = userInput.nextLine();
+                        message = EmailUtilities.SEARCH_SENT + EmailUtilities.DELIMITER + searchTypeS + EmailUtilities.DELIMITER + keywordS;
+                        break;
+
+                    case "8":
                         System.out.print("Enter Email ID to read: ");
                         String emailId = userInput.nextLine();
                         message = EmailUtilities.READ + EmailUtilities.DELIMITER + emailId;
                         break;
 
-                    case "6":
+                    case "9":
                         message = EmailUtilities.LOGOUT;
                         break;
 
-                    case "7":
+                    case "10":
                         message = EmailUtilities.EXIT;
                         isRunning = false;
                         break;
@@ -85,13 +103,11 @@ public class TCPEmailClient {
                         continue;
                 }
 
-                // Send the message and print the server response
                 network.send(message);
                 String response = network.receive();
                 System.out.println("Response: " + response);
             }
 
-            // Disconnect when done
             network.disconnect();
 
         } catch (IOException e) {

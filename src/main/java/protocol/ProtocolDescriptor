@@ -21,8 +21,9 @@ Response: FAILED
 or
 Response: INVALID_REQUEST
 or
-Response: USER_NOT_FOUND
-
+Response: INVALID_USERNAME
+or
+Response: INVALID_PASSWORD
 
 Send Email function:
 Request: SEND%%$recipient%%$subject%%$content
@@ -30,22 +31,43 @@ Response: EMAIL_SENT
 or
 Response: USER_NOT_FOUND
 or
-Response: INVALID_EMAIL_FORMAT
-
+Response: FAILED
+or
+Response: INVALID_REQUEST
 
 List Received Emails:
 Request: LIST_RECEIVED
-Response: EMAIL%%$id%%$sender%%$subject%%$timestamp
+Response: $id%%$sender%%$subject%%$timestamp
+or
+Response: NO_EMAILS_FOUND
 
+List Sent Emails:
+Request: LIST_SENT
+Response: $id%%$recipient%%$subject%%$timestamp
+or
+Response: NO_EMAILS_FOUND
+
+Search Received Emails:
+Request: SEARCH_RECEIVED%%$type%%$keyword
+$type = subject or sender
+Response: $id%%$sender%%$subject%%$timestamp
+or
+Response: NO_EMAILS_FOUND
+
+Search Sent Emails:
+Request: SEARCH_SENT%%$type%%$keyword
+$type = subject or recipient
+Response: $id%%$recipient%%$subject%%$timestamp
 or
 Response: NO_EMAILS_FOUND
 
 Read Email:
 Request: READ%%$id
-Response: EMAIL_CONTENT%%$content
+Response: EMAIL_CONTENT%%$sender%%$subject%%$message%%$timestamp
 or
 Response: EMAIL_NOT_FOUND
-
+or
+Response: INVALID_REQUEST
 
 Logout function:
 Request: LOGOUT
@@ -53,5 +75,6 @@ Response: LOGGED_OUT
 or
 Response: INVALID_REQUEST
 
-More text here
-text
+Exit function:
+Request: EXIT
+Response: GOODBYE

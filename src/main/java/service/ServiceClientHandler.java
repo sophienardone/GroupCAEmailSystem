@@ -33,6 +33,11 @@ public class ServiceClientHandler implements Runnable {
         this.emailManager = emailManager;
     }
 
+    /**
+     * Runs the client handling loop
+     * Listens for requests from the client, processes them, and sends responses
+     * Closes the socket when the session ends or an error occurs.
+     */
     @Override
     public void run() {
         try {
@@ -62,6 +67,12 @@ public class ServiceClientHandler implements Runnable {
         }
     }
 
+    /**
+     * handleRequest parses and routes a client request to the appropriate handler method
+     *
+     * @param request the full request string from the client
+     * @return the server's response string based on the protocol
+     */
     private String handleRequest(String request) {
         String[] parts = request.split(EmailUtilities.DELIMITER);
         String command = parts[0];
@@ -93,6 +104,12 @@ public class ServiceClientHandler implements Runnable {
         }
     }
 
+    /**
+     * This method handles user registration
+     *
+     * @param parts the request parts, parts[1] being the username and parts[2] being the password
+     * @return a response indicating success, failure, or invalid format
+     */
     private String handleRegister(String[] parts) {
         if (parts.length < 3) return EmailUtilities.INVALID_REQUEST;
         String username = parts[1];
@@ -109,6 +126,12 @@ public class ServiceClientHandler implements Runnable {
         }
     }
 
+    /**
+     * This method handles user login
+     *
+     * @param parts the request parts,  parts[1] being the username and parts[2] being the password
+     * @return a response indicating login success, or reasons for failure
+     */
     private String handleLogin(String[] parts) {
         if (parts.length < 3) return EmailUtilities.INVALID_REQUEST;
         String username = parts[1];
@@ -121,6 +144,12 @@ public class ServiceClientHandler implements Runnable {
         return EmailUtilities.SUCCESSFUL;
     }
 
+    /**
+     * This method handles sending an email from the logged-in user to a recipient
+     *
+     * @param parts the request parts: sender, recipient, subject, message content
+     * @return a response indicating whether the email was sent successfully or not
+     */
     private String handleSend(String[] parts) {
         if (!isLoggedIn()) return EmailUtilities.FAILED;
         if (parts.length < 4) return EmailUtilities.INVALID_REQUEST;
@@ -134,6 +163,11 @@ public class ServiceClientHandler implements Runnable {
         return emailManager.sendEmail(loggedInUser.getUsername(), recipient, subject, content);
     }
 
+    /**
+     * This method handles the retrieval of metadata for all emails received by the logged-in user
+     *
+     * @return a formatted string with email metadata or an error message
+     */
     private String handleListReceived() {
         if (!isLoggedIn()) return EmailUtilities.FAILED;
         List<model.Email> emails = emailManager.getReceivedEmailsForUser(loggedInUser.getUsername());
@@ -149,6 +183,12 @@ public class ServiceClientHandler implements Runnable {
         return builder.toString().trim();
     }
 
+    /**
+     * This method handles reading the content of a specific received email by its ID
+     *
+     * @param parts the request parts, where parts[1] is the email ID
+     * @return the full content of the email or an error message if not found or invalid
+     */
     private String handleRead(String[] parts) {
         if (!isLoggedIn() || parts.length < 2) return EmailUtilities.INVALID_REQUEST;
 
@@ -171,11 +211,21 @@ public class ServiceClientHandler implements Runnable {
         }
     }
 
+    /**
+     * This method logs out the currently logged-in user
+     *
+     * @return a response confirming the user is logged out.
+     */
     private String handleLogout() {
         loggedInUser = null;
         return EmailUtilities.LOGGED_OUT;
     }
 
+    /**
+     * This method checks if a user is currently logged in for this session
+     *
+     * @return true if a user is logged in, false otherwise.
+     */
     private boolean isLoggedIn() {
         return loggedInUser != null;
     }
